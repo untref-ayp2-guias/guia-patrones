@@ -1,0 +1,70 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Ejercicio 3
+      id: ejercicio-3
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Ejercicio 3
+        setup-command: ''
+        command: go test ./ejercicios/... -run ^(TestOperacionUno|TestOperacionDos|TestOperacionTres)$
+        timeout: 10
+        max-score: 1
+    - name: Ejercicio 1
+      id: ejercicio-1
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Ejercicio 1
+        setup-command: ''
+        command: go run ./ejercicios/... -run ^TestArchivosMusica$
+        timeout: 10
+        max-score: 1
+    - name: Ejercicio 2
+      id: ejercicio-2
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Ejercicio 2
+        setup-command: ''
+        command: go test ./ejercicios/... -run ^TestEjemplo$
+        timeout: 10
+        max-score: 1
+    - name: Ejercicio 4
+      id: ejercicio-4
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Ejercicio 4
+        setup-command: ''
+        command: go test ./ejercicios/... -run ^(TestHasNextPosicionesPares|TestHasNextWhenIsEmptyPosicionesPares|TestHasNextWhenEmptiedPosicionesPares|TestNextPosicionesPares|TestErrorsWhenEmptiedPosicionesPares)$
+        timeout: 10
+        max-score: 1
+    - name: Ejercicio 5
+      id: ejercicio-5
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Ejercicio 5
+        setup-command: ''
+        command: go test ./ejercicios/... -run ^(TestHasNext|TestHasNextWhenIsEmpty|TestHasNextWhenEmptied|TestNext|TestErrorsWhenEmptied)$
+        timeout: 10
+        max-score: 1
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        EJERCICIO-3_RESULTS: "${{steps.ejercicio-3.outputs.result}}"
+        EJERCICIO-1_RESULTS: "${{steps.ejercicio-1.outputs.result}}"
+        EJERCICIO-2_RESULTS: "${{steps.ejercicio-2.outputs.result}}"
+        EJERCICIO-4_RESULTS: "${{steps.ejercicio-4.outputs.result}}"
+        EJERCICIO-5_RESULTS: "${{steps.ejercicio-5.outputs.result}}"
+      with:
+        runners: ejercicio-3,ejercicio-1,ejercicio-2,ejercicio-4,ejercicio-5
